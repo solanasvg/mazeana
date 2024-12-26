@@ -1,0 +1,1330 @@
+<html><head><base href="." />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+    body {
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background: #1a1a1a;
+        font-family: 'Press Start 2P', monospace;
+    }
+
+    #menu-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    #menu {
+        background: #2a2a2a;
+        padding: 30px;
+        border-radius: 10px;
+        border: 2px solid #444;
+        width: 80%;
+        max-width: 500px;
+        text-align: center;
+    }
+
+    .menu-title {
+        color: #fff;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 1.2em;
+        margin-bottom: 30px;
+        text-align: center;
+        line-height: 1.5;
+    }
+
+    .menu-button {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        margin: 15px 0;
+        background: #444;
+        border: none;
+        border-radius: 5px;
+        color: #fff;
+        font-size: 0.8em;
+        cursor: pointer;
+        transition: background 0.3s;
+        font-family: 'Press Start 2P', monospace;
+    }
+
+    .menu-button:hover {
+        background: #666;
+    }
+
+    .menu-button a {
+        display: block;
+        width: 100%;
+        height: 100%;
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .menu-button:hover a {
+        color: inherit;
+    }
+
+    #scoreboard {
+        display: none;
+        color: #fff;
+        margin: 20px 0;
+    }
+
+    #scoreboard-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    #scoreboard-list li {
+        padding: 15px;
+        margin: 10px 0;
+        background: #333;
+        border-radius: 5px;
+        font-size: 0.8em;
+        line-height: 1.5;
+    }
+
+    #suggestion-box {
+        display: none;
+        color: #fff;
+    }
+
+    #suggestion-form {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 20px;
+    }
+
+    #suggestion-input {
+        padding: 10px;
+        background: #333;
+        border: 1px solid #444;
+        color: #fff;
+        border-radius: 5px;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 0.8em;
+        line-height: 1.5;
+        width: 90%;
+    }
+
+    #context {
+        display: none;
+        color: #fff;
+        margin: 20px 0;
+    }
+
+    #context p {
+        font-size: 0.8em;
+        line-height: 1.5;
+        margin: 15px 0;
+    }
+
+    .back-button {
+        margin-top: 20px;
+        padding: 10px;
+        background: #333;
+        border: none;
+        color: #fff;
+        border-radius: 5px;
+        cursor: pointer;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 0.8em;
+    }
+
+    #game-container {
+        display: none; /* Hide game initially */
+    }
+
+    #game-container {
+        text-align: center;
+    }
+
+    #maze {
+        display: inline-block;
+        background: #fff;
+        padding: 10px;
+        border: 2px solid #333;
+    }
+
+    .cell {
+        width: 20px;
+        height: 20px;
+        display: inline-block;
+    }
+
+    .wall {
+        background: #000;
+    }
+
+    .path {
+        background: #fff;
+    }
+
+    .player {
+        background-image: url('/New Piskel (3).gif');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .enemy {
+        background-image: url('/3D Monster Maze (1).gif');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .goal {
+        background-image: url('/New Piskel (2).gif');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    .portal-proximity {
+        background: #ddd;
+    }
+
+    .hammer {
+        background-image: url('/New Piskel.gif');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+    }
+
+    #score {
+        color: #fff;
+        margin: 20px 0;
+        font-size: 0.8em;
+        line-height: 1.5;
+    }
+
+    #hammer-status {
+        color: #fff;
+        margin: 10px 0;
+        font-size: 0.8em;
+        line-height: 1.5;
+    }
+
+    #hammer-bar-container {
+        width: 200px;
+        height: 20px;
+        background-color: #333;
+        border: 2px solid #444;
+        margin: 10px auto;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    #hammer-bar {
+        height: 100%;
+        background-color: #666;
+        width: 100%;
+        transition: width 0.3s ease;
+    }
+
+    #game-over {
+        color: #f00;
+        font-size: 1.5em;
+        margin-top: 20px;
+        display: none;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        background: rgba(0,0,0,0.7);
+        padding: 20px;
+        border-radius: 5px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        text-align: center;
+        line-height: 1.5;
+    }
+
+    #portal-timer {
+        color: #fff;
+        margin: 10px 0;
+        font-size: 0.8em;
+        line-height: 1.5;
+    }
+
+    #intro-screen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: black;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 2000;
+    }
+
+    #intro-image {
+        max-width: 80%;
+        max-height: 80vh;
+        margin-bottom: 20px;
+    }
+
+    #intro-text {
+        color: white;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 16px;
+        text-align: center;
+        animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+        0%, 49% { opacity: 1; }
+        50%, 100% { opacity: 0; }
+    }
+
+    /* Add CSS to distinguish player roles */
+    .enemy.player-controlled {
+        filter: hue-rotate(90deg); /* Green tint for player-controlled dino */
+    }
+
+    /* Add player role indicator */
+    #player-role {
+        color: #fff;
+        text-align: center;
+        margin: 10px 0;
+        font-family: 'Press Start 2P', monospace;
+        font-size: 0.8em;
+    }
+    
+    #ai-footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        color: #666;
+        text-align: center;
+        padding: 10px 0;
+        font-size: 0.6em;
+        z-index: 2000;
+        font-family: 'Press Start 2P', monospace;
+    }
+</style>
+</head>
+<body>
+<div id="intro-screen">
+    <img id="intro-image" src="https://9iv1hmc7k0achq81l0xp.c.wbsm.ai/e5d316af-2e9f-4d1a-9ca3-5a9047f43621.png" alt="Retro Dino Ad">
+    <div id="intro-text">PRESS SPACE TO START</div>
+</div>
+
+<div id="menu-container">
+    <div id="menu">
+        <div class="menu-title">3D Monster Maze:<br>Blast from the Past</div>
+        <button class="menu-button" id="play-button">Single Player</button>
+        <button class="menu-button" id="multiplayer-button">Multiplayer</button>
+        <button class="menu-button" id="scoreboard-button">Scoreboard</button>
+        <button class="menu-button" id="suggestion-button">Suggestions</button>
+        <button class="menu-button" id="context-button">How to Play</button>
+        <button class="menu-button" id="info-button">
+            <a href="https://en.wikipedia.org/wiki/3D_Monster_Maze" target="_blank" style="color: inherit; text-decoration: none;">
+                Wikipedia Info
+            </a>
+        </button>
+
+        <div id="scoreboard">
+            <h2>High Scores</h2>
+            <ul id="scoreboard-list"></ul>
+            <button class="back-button">Back to Menu</button>
+        </div>
+        
+        <div id="suggestion-box">
+            <h2>Submit Suggestion</h2>
+            <form id="suggestion-form">
+                <textarea id="suggestion-input" rows="4" placeholder="Enter your suggestion..."></textarea>
+                <button class="menu-button" type="submit">Submit</button>
+            </form>
+            <button class="back-button">Back to Menu</button>
+        </div>
+        
+        <div id="context">
+            <h2>How to Play</h2>
+            <p>Use arrow keys to move through the maze.</p>
+            <p>Collect the hammer to break (K) or build (L) walls.</p>
+            <p>Avoid the dinosaur and reach the portal!</p>
+            <p>Stay near the portal for 3 seconds to advance.</p>
+            <h3>Multiplayer Mode:</h3>
+            <p>Player 1: Arrow keys to move, K/L for hammer</p>
+            <p>Player 2 (Dino): WASD to move, SPACE to break walls</p>
+            <p>Press Q to return to menu</p>
+            <button class="back-button">Back to Menu</button>
+        </div>
+    </div>
+</div>
+
+<div id="game-container">
+    <div id="player-role"></div>
+    <div id="score">Level: 1 | Score: 0 | Moves: 0 | Enemy Speed: 1x</div>
+    <div id="hammer-status">Find the hammer to break/build walls!</div>
+    <div id="hammer-bar-container">
+        <div id="hammer-bar"></div>
+    </div>
+    <div id="portal-timer"></div>
+    <div id="maze"></div>
+    <div id="game-over">Game Over! Press Space to Restart</div>
+</div>
+
+<div id="ai-footer">AI used: Sonnet 3.5</div>
+
+<script>
+function handleIntro() {
+    const introScreen = document.getElementById('intro-screen');
+    const menuContainer = document.getElementById('menu-container');
+    
+    // Initially hide the menu
+    menuContainer.style.display = 'none';
+    
+    document.addEventListener('keydown', function startGame(e) {
+        if (e.code === 'Space' && introScreen.style.display !== 'none') {
+            introScreen.style.display = 'none';
+            menuContainer.style.display = 'flex';
+            document.removeEventListener('keydown', startGame);
+        }
+    });
+}
+
+class MazeGame {
+    constructor() {
+        this.isMultiplayer = false;
+        this.room = null; // Will hold WebsimSocket instance
+        this.hammerPos = null;
+        this.hasHammer = false;
+        this.hammerUses = 0;
+        this.initGame();
+        this.setupEventListeners();
+        this.portalProximityTimer = null;
+        this.portalProximityStartTime = null;
+    }
+
+    async askToSubmitScore() {
+        // Create a modal for score submission with clearer options
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #2a2a2a;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #444;
+            color: white;
+            text-align: center;
+            font-family: 'Press Start 2P', monospace;
+            z-index: 2000;
+            width: 80%;
+            max-width: 400px;
+        `;
+
+        const user = await window.websim.getUser();
+        const username = user ? user.username : 'Anonymous';
+
+        modal.innerHTML = `
+            <h2 style="font-size: 16px; margin-bottom: 20px;">Submit Score?</h2>
+            <p style="font-size: 12px; margin-bottom: 15px;">Level: ${this.level} | Score: ${this.score}</p>
+            <p style="font-size: 12px; margin-bottom: 15px;">Playing as: @${username}</p>
+            <div style="display: flex; justify-content: center; gap: 10px;">
+                <button id="submit-score" style="
+                    background: #444;
+                    border: none;
+                    padding: 10px 20px;
+                    color: white;
+                    cursor: pointer;
+                    font-family: 'Press Start 2P', monospace;
+                    border-radius: 5px;
+                    font-size: 10px;
+                ">SUBMIT SCORE</button>
+                <button id="cancel-submit" style="
+                    background: #666;
+                    border: none;
+                    padding: 10px 20px;
+                    color: white;
+                    cursor: pointer;
+                    font-family: 'Press Start 2P', monospace;
+                    border-radius: 5px;
+                    font-size: 10px;
+                ">NO THANKS</button>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Return a promise that resolves with the user's choice
+        return new Promise((resolve) => {
+            document.getElementById('submit-score').onclick = () => {
+                document.body.removeChild(modal);
+                resolve(true);
+            };
+            document.getElementById('cancel-submit').onclick = () => {
+                document.body.removeChild(modal);
+                resolve(false);
+            };
+        });
+    }
+
+    initGame() {
+        this.level = 1;
+        this.score = 0;
+        this.moves = 0;
+        this.gameOver = false;
+        this.mazeWidth = 15;
+        this.mazeHeight = 15;
+        this.enemies = [];
+        this.playerPos = { x: 1, y: 1 };
+        this.goalPos = { x: this.mazeWidth - 2, y: this.mazeHeight - 2 };
+        this.hasHammer = false;
+        this.hammerUses = 0;
+        
+        // Generate maze first
+        this.generateMaze();
+        
+        // Then place hammer after maze exists
+        this.placeHammer();
+        
+        // Add enemies last
+        this.addEnemies();
+        this.render();
+        
+        if (this.portalProximityTimer) {
+            clearInterval(this.portalProximityTimer);
+            this.portalProximityTimer = null;
+        }
+        document.getElementById('portal-timer').textContent = '';
+    }
+
+    initMultiplayer() {
+        this.isMultiplayer = true;
+        this.room = new WebsimSocket();
+        
+        // Listen for dino movement events and other updates
+        this.room.onmessage = (event) => {
+            const data = event.data;
+            switch(data.type) {
+                case 'dinoMove':
+                    const enemy = this.enemies[0];
+                    enemy.x = data.x;
+                    enemy.y = data.y;
+                    this.render();
+                    break;
+                case 'dinoBreakWall':
+                    this.maze[data.y][data.x] = 0;
+                    this.render();
+                    break;
+                case 'connected':
+                    console.log('Player connected:', data.username);
+                    // Assign roles based on connection order
+                    this.determinePlayerRole();
+                    break;
+                case 'disconnected':
+                    console.log('Player disconnected:', data.username);
+                    break;
+            }
+        };
+        
+        this.determinePlayerRole();
+    }
+
+    determinePlayerRole() {
+        // Count peers to determine role
+        const peerCount = Object.keys(this.room.party.peers).length;
+        this.isPlayer1 = peerCount === 0;
+
+        // Update player role display
+        const playerRoleDisplay = document.getElementById('player-role');
+        playerRoleDisplay.textContent = this.isPlayer1 ? 
+            'You are Player 1 (Maze Runner)' : 
+            'You are Player 2 (Dino)';
+
+        // If player 2 (dino), disable AI movement
+        if (!this.isPlayer1) {
+            this.moveEnemies = () => false;
+        }
+    }
+
+    placeHammer() {
+        if (!this.maze || !this.maze.length) {
+            console.error('Maze not initialized');
+            return;
+        }
+        
+        let attempts = 0;
+        const maxAttempts = 100; // Prevent infinite loops
+        
+        do {
+            this.hammerPos = {
+                x: Math.floor(Math.random() * (this.mazeWidth - 2)) + 1,
+                y: Math.floor(Math.random() * (this.mazeHeight - 2)) + 1
+            };
+            attempts++;
+            
+            if (attempts >= maxAttempts) {
+                // If we can't find a valid position, place it in a known empty spot
+                this.hammerPos = {
+                    x: 3,
+                    y: 1
+                };
+                // Ensure this position is clear
+                if (this.maze && this.maze[1] && this.maze[1][3]) {
+                    this.maze[1][3] = 0;
+                }
+                break;
+            }
+        } while (
+            !this.maze[this.hammerPos.y] || 
+            !this.maze[this.hammerPos.y][this.hammerPos.x] || 
+            this.maze[this.hammerPos.y][this.hammerPos.x] === 1 || 
+            (this.hammerPos.x === this.playerPos.x && this.hammerPos.y === this.playerPos.y) ||
+            (this.hammerPos.x === this.goalPos.x && this.hammerPos.y === this.goalPos.y)
+        );
+    }
+
+    generateMaze() {
+        this.maze = [];
+        for (let y = 0; y < this.mazeHeight; y++) {
+            this.maze[y] = [];
+            for (let x = 0; x < this.mazeWidth; x++) {
+                this.maze[y][x] = 1;
+            }
+        }
+        this.carve(1, 1);
+        this.maze[this.playerPos.y][this.playerPos.x] = 0;
+        this.maze[this.goalPos.y][this.goalPos.x] = 0;
+    }
+
+    carve(x, y) {
+        const directions = [[0, -2], [2, 0], [0, 2], [-2, 0]];
+        directions.sort(() => Math.random() - 0.5);
+
+        for (let [dx, dy] of directions) {
+            let newX = x + dx;
+            let newY = y + dy;
+            
+            if (newX > 0 && newX < this.mazeWidth - 1 && newY > 0 && newY < this.mazeHeight - 1 
+                && this.maze[newY][newX] === 1) {
+                this.maze[y + dy/2][x + dx/2] = 0;
+                this.maze[newY][newX] = 0;
+                this.carve(newX, newY);
+            }
+        }
+    }
+
+    hasLineOfSight(enemy, target, range) {
+        const dx = target.x - enemy.x;
+        const dy = target.y - enemy.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance > range) return false;
+        
+        const steps = Math.max(Math.abs(dx), Math.abs(dy));
+        for (let i = 1; i < steps; i++) {
+            const x = Math.round(enemy.x + (dx * i) / steps);
+            const y = Math.round(enemy.y + (dy * i) / steps);
+            if (this.maze[y][x] === 1) return false;
+        }
+        return true;
+    }
+
+    moveStrategically(enemy) {
+        // Create a simple queue for BFS pathfinding
+        const queue = [{x: enemy.x, y: enemy.y, path: []}];
+        const visited = new Set();
+        
+        while (queue.length > 0) {
+            const current = queue.shift();
+            const key = `${current.x},${current.y}`;
+            
+            if (visited.has(key)) continue;
+            visited.add(key);
+            
+            if (current.x === this.playerPos.x && current.y === this.playerPos.y) {
+                if (current.path.length > 0) {
+                    enemy.x = current.path[0].x;
+                    enemy.y = current.path[0].y;
+                }
+                return;
+            }
+            
+            const directions = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+            for (const [dx, dy] of directions) {
+                const newX = current.x + dx;
+                const newY = current.y + dy;
+                
+                if (newX >= 0 && newX < this.mazeWidth && 
+                    newY >= 0 && newY < this.mazeHeight && 
+                    this.maze[newY][newX] === 0) {
+                    const newPath = [...current.path, {x: newX, y: newY}];
+                    queue.push({x: newX, y: newY, path: newPath});
+                }
+            }
+        }
+        
+        // If no path found, try to break walls or move randomly
+        this.moveTowardsPlayer(enemy);
+    }
+
+    moveEnemies() {
+        const enemy = this.enemies[0];
+        const movesThisTurn = enemy.movesPerTurn;
+        
+        // Intelligence increases with level
+        const intelligenceLevel = Math.min(Math.floor(this.level / 2), 5); // Max intelligence level of 5
+        const sightRange = 3 + intelligenceLevel; // Sight range increases with intelligence
+        
+        // Enemy gets multiple moves per turn based on level
+        for(let i = 0; i < movesThisTurn; i++) {
+            // Higher intelligence means better pathfinding
+            if (this.hasLineOfSight(enemy, this.playerPos, sightRange)) {
+                if (intelligenceLevel >= 3) {
+                    // Smarter pathfinding at higher levels
+                    this.moveStrategically(enemy);
+                } else {
+                    this.moveTowardsPlayer(enemy);
+                }
+            } else {
+                if (intelligenceLevel >= 4) {
+                    // Search pattern when player not visible
+                    this.searchForPlayer(enemy);
+                } else {
+                    this.moveRandomly(enemy);
+                }
+            }
+            
+            // Check for collision after each move
+            if (enemy.x === this.playerPos.x && enemy.y === this.playerPos.y) {
+                this.gameOver = true;
+                document.getElementById('game-over').style.display = 'block';
+                document.getElementById('game-over').textContent = 'Game Over! Press Space to Restart';
+                this.stopPortalTimer();
+                
+                // Ask to submit score
+                this.askToSubmitScore().then(shouldSubmit => {
+                    if (shouldSubmit) {
+                        const saveHighScore = async () => {
+                            const user = await window.websim.getUser();
+                            const username = user ? user.username : 'Anonymous';
+                            const scores = JSON.parse(localStorage.getItem('highScores') || '[]');
+                            scores.push({
+                                username: username,
+                                level: this.level,
+                                score: this.score,
+                                timestamp: Date.now()
+                            });
+                            
+                            // Sort by score and keep top 10
+                            scores.sort((a, b) => b.score - a.score);
+                            scores.splice(10);
+                            
+                            localStorage.setItem('highScores', JSON.stringify(scores));
+                        };
+                        saveHighScore();
+                    }
+                });
+                return true;
+            }
+        }
+        return false;
+    }
+
+    searchForPlayer(enemy) {
+        // Implement a search pattern when player is not in sight
+        const patternDirections = [
+            [1, 0], [0, 1], [-1, 0], [0, -1], // Cross pattern
+            [1, 1], [-1, -1], [1, -1], [-1, 1] // Diagonal pattern
+        ];
+        
+        // Try each direction until a valid move is found
+        for (const [dx, dy] of patternDirections) {
+            const newX = enemy.x + dx;
+            const newY = enemy.y + dy;
+            
+            // Check if move is valid
+            if (newX >= 0 && newX < this.mazeWidth && 
+                newY >= 0 && newY < this.mazeHeight && 
+                this.maze[newY][newX] === 0) {
+                
+                // Move enemy to new position
+                enemy.x = newX;
+                enemy.y = newY;
+                return;
+            }
+        }
+        
+        // If no valid move found in pattern, fall back to random movement
+        this.moveRandomly(enemy);
+    }
+
+    isEnemyTrapped(enemy) {
+        const directions = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+        return !directions.some(([dx, dy]) => {
+            const newX = enemy.x + dx;
+            const newY = enemy.y + dy;
+            return this.maze[newY]?.[newX] === 0;
+        });
+    }
+
+    hasWallBetween(enemy) {
+        const dx = this.playerPos.x - enemy.x;
+        const dy = this.playerPos.y - enemy.y;
+        
+        // Check immediate surrounding walls in direction of player
+        if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1) {
+            const nextX = enemy.x + Math.sign(dx);
+            const nextY = enemy.y + Math.sign(dy);
+            return this.maze[nextY]?.[nextX] === 1;
+        }
+        return false;
+    }
+
+    moveTowardsPlayer(enemy) {
+        const dx = this.playerPos.x - enemy.x;
+        const dy = this.playerPos.y - enemy.y;
+        
+        // Check if trapped or wall blocking
+        if (this.isEnemyTrapped(enemy) || this.hasWallBetween(enemy)) {
+            // Increase chance of wall breaking based on level (up to 50% at higher levels)
+            const breakChance = Math.min(0.1 + (this.level * 0.02), 0.5);
+            
+            if (Math.random() < breakChance) {
+                // Try to break a wall in the direction of the player
+                const nextX = enemy.x + Math.sign(dx);
+                const nextY = enemy.y + Math.sign(dy);
+                
+                // Make sure we're not breaking the maze boundaries
+                if (nextX > 0 && nextX < this.mazeWidth - 1 && 
+                    nextY > 0 && nextY < this.mazeHeight - 1) {
+                    if (this.maze[nextY]?.[nextX] === 1) {
+                        this.maze[nextY][nextX] = 0;
+                        return;
+                    }
+                }
+            }
+        }
+        
+        // Try horizontal movement first
+        if (dx !== 0) {
+            const nextX = enemy.x + Math.sign(dx);
+            if (this.maze[enemy.y][nextX] === 0) {
+                enemy.x = nextX;
+                return;
+            } else if (Math.random() < 0.2 + (this.level * 0.02)) { // Random chance to break horizontal walls
+                if (nextX > 0 && nextX < this.mazeWidth - 1) {
+                    this.maze[enemy.y][nextX] = 0;
+                    enemy.x = nextX;
+                    return;
+                }
+            }
+        }
+        
+        // Try vertical movement if horizontal wasn't possible
+        if (dy !== 0) {
+            const nextY = enemy.y + Math.sign(dy);
+            if (this.maze[nextY][enemy.x] === 0) {
+                enemy.y = nextY;
+                return;
+            } else if (Math.random() < 0.2 + (this.level * 0.02)) { // Random chance to break vertical walls
+                if (nextY > 0 && nextY < this.mazeHeight - 1) {
+                    this.maze[nextY][enemy.x] = 0;
+                    enemy.y = nextY;
+                    return;
+                }
+            }
+        }
+    }
+
+    moveRandomly(enemy) {
+        const directions = [[0, -1], [1, 0], [0, 1], [-1, 0]];
+        const validMoves = directions.filter(([dx, dy]) => {
+            const newX = enemy.x + dx;
+            const newY = enemy.y + dy;
+            return this.maze[newY][newX] === 0;
+        });
+
+        if (validMoves.length > 0) {
+            const [dx, dy] = validMoves[Math.floor(Math.random() * validMoves.length)];
+            enemy.x += dx;
+            enemy.y += dy;
+        }
+    }
+
+    isNearPortal() {
+        const dx = Math.abs(this.playerPos.x - this.goalPos.x);
+        const dy = Math.abs(this.playerPos.y - this.goalPos.y);
+        return dx <= 1 && dy <= 1; // Changed from 2 to 1 since this creates a 2-block radius 
+    }
+
+    startPortalTimer() {
+        if (!this.portalProximityTimer) {
+            this.portalProximityStartTime = Date.now();
+            this.portalProximityTimer = setInterval(() => {
+                const timeRemaining = 3 - Math.floor((Date.now() - this.portalProximityStartTime) / 1000);
+                if (timeRemaining > 0) {
+                    document.getElementById('portal-timer').textContent = `Portal activating in: ${timeRemaining}s`;
+                } else {
+                    this.advanceLevel();
+                }
+            }, 100);
+        }
+    }
+
+    stopPortalTimer() {
+        if (this.portalProximityTimer) {
+            clearInterval(this.portalProximityTimer);
+            this.portalProximityTimer = null;
+            this.portalProximityStartTime = null;
+            document.getElementById('portal-timer').textContent = '';
+        }
+    }
+
+    addEnemies() {
+        this.enemies = [];
+        // Just add one enemy that gets progressively harder
+        let x, y;
+        do {
+            x = Math.floor(Math.random() * (this.mazeWidth - 2)) + 1;
+            y = Math.floor(Math.random() * (this.mazeHeight - 2)) + 1;
+        } while (
+            this.maze[y][x] === 1 || 
+            (x === this.playerPos.x && y === this.playerPos.y) ||
+            (x === this.goalPos.x && y === this.goalPos.y) ||
+            (this.hammerPos && x === this.hammerPos.x && y === this.hammerPos.y));
+        
+        this.enemies.push({ 
+            x, 
+            y,
+            // Add moves per turn based on level
+            movesPerTurn: 1 + Math.floor(this.level / 3) // Every 3 levels, enemy gets an extra move
+        });
+    }
+
+    checkCollision() {
+        if (this.enemies.some(enemy => 
+            enemy.x === this.playerPos.x && enemy.y === this.playerPos.y
+        )) {
+            this.gameOver = true;
+            document.getElementById('game-over').style.display = 'block';
+            document.getElementById('game-over').textContent = 'Game Over! Press Space to Restart';
+            this.stopPortalTimer();
+            
+            // Ask to submit score
+            this.askToSubmitScore().then(shouldSubmit => {
+                if (shouldSubmit) {
+                    const saveHighScore = async () => {
+                        const user = await window.websim.getUser();
+                        const username = user ? user.username : 'Anonymous';
+                        const scores = JSON.parse(localStorage.getItem('highScores') || '[]');
+                        scores.push({
+                            username: username,
+                            level: this.level,
+                            score: this.score,
+                            timestamp: Date.now()
+                        });
+                        
+                        // Sort by score and keep top 10
+                        scores.sort((a, b) => b.score - a.score);
+                        scores.splice(10);
+                        
+                        localStorage.setItem('highScores', JSON.stringify(scores));
+                    };
+                    saveHighScore();
+                }
+            });
+            return true;
+        }
+        return false;
+    }
+
+    setupEventListeners() {
+        document.addEventListener('keydown', (e) => {
+            // Add Q menu return right after the Space reset check
+            if (e.key.toLowerCase() === 'q') {
+                // Show menu
+                document.getElementById('menu-container').style.display = 'flex';
+                // Hide game
+                document.getElementById('game-container').style.display = 'none';
+                // Reset game state
+                this.gameOver = false;
+                document.getElementById('game-over').style.display = 'none';
+                this.initGame();
+                return;
+            }
+
+            // Add this at the start of the event listener
+            if (this.isMultiplayer && !this.isPlayer1) {
+                // Dinosaur controls
+                let newX = this.enemies[0].x;
+                let newY = this.enemies[0].y;
+
+                switch(e.key.toLowerCase()) {
+                    case 'w': newY--; break;
+                    case 's': newY++; break;
+                    case 'a': newX--; break;
+                    case 'd': newX++; break;
+                    case ' ': // Break wall in front of dino
+                        const frontX = newX + (this.lastMoveX || 0);
+                        const frontY = newY + (this.lastMoveY || 0);
+                        if (frontX >= 0 && frontX < this.mazeWidth && 
+                            frontY >= 0 && frontY < this.mazeHeight && 
+                            this.maze[frontY][frontX] === 1) {
+                            this.room.send({
+                                type: 'dinoBreakWall',
+                                x: frontX,
+                                y: frontY
+                            });
+                        }
+                        return;
+                    default: return;
+                }
+
+                if (newX >= 0 && newX < this.mazeWidth && 
+                    newY >= 0 && newY < this.mazeHeight && 
+                    this.maze[newY][newX] === 0) {
+                    this.room.send({
+                        type: 'dinoMove',
+                        x: newX,
+                        y: newY
+                    });
+                }
+                return;
+            }
+            
+            // Original player controls remain the same...
+
+            if (e.code === 'Space' && this.gameOver) {
+                this.gameOver = false;
+                document.getElementById('game-over').style.display = 'none';
+                this.initGame();
+                return;
+            }
+
+            if (this.gameOver) return;
+
+            let newX = this.playerPos.x;
+            let newY = this.playerPos.y;
+
+            // Add hammer controls
+            if (e.key.toLowerCase() === 'k' && this.hasHammer && this.hammerUses > 0) {
+                // Break wall in front of player based on last movement
+                const frontX = this.playerPos.x + (this.lastMoveX || 0);
+                const frontY = this.playerPos.y + (this.lastMoveY || 0);
+                if (frontX >= 0 && frontX < this.mazeWidth && 
+                    frontY >= 0 && frontY < this.mazeHeight && 
+                    this.maze[frontY][frontX] === 1) {
+                    this.maze[frontY][frontX] = 0;
+                    this.hammerUses--;
+                    this.render();
+                }
+                return;
+            }
+
+            if (e.key.toLowerCase() === 'l' && this.hasHammer && this.hammerUses > 0) {
+                // Build wall in front of player based on last movement
+                const frontX = this.playerPos.x + (this.lastMoveX || 0);
+                const frontY = this.playerPos.y + (this.lastMoveY || 0);
+                if (frontX >= 0 && frontX < this.mazeWidth && 
+                    frontY >= 0 && frontY < this.mazeHeight && 
+                    this.maze[frontY][frontX] === 0 &&
+                    !(frontX === this.goalPos.x && frontY === this.goalPos.y)) {
+                    this.maze[frontY][frontX] = 1;
+                    this.hammerUses--;
+                    this.render();
+                }
+                return;
+            }
+
+            switch(e.key) {
+                case 'ArrowUp': newY--; this.lastMoveY = -1; this.lastMoveX = 0; break;
+                case 'ArrowDown': newY++; this.lastMoveY = 1; this.lastMoveX = 0; break;
+                case 'ArrowLeft': newX--; this.lastMoveX = -1; this.lastMoveY = 0; break;
+                case 'ArrowRight': newX++; this.lastMoveX = 1; this.lastMoveY = 0; break;
+                default: return;
+            }
+
+            if (this.maze[newY][newX] === 0) {
+                this.playerPos.x = newX;
+                this.playerPos.y = newY;
+                this.moves++;
+                this.moveEnemies();
+                
+                // Modify the collision check
+                if (this.checkCollision()) {
+                    this.gameOver = true;
+                    document.getElementById('game-over').style.display = 'block';
+                    document.getElementById('game-over').textContent = 'Game Over! Press Space to Restart';
+                    this.stopPortalTimer();
+                    
+                    // Ask to submit score
+                    this.askToSubmitScore().then(shouldSubmit => {
+                        if (shouldSubmit) {
+                            const saveHighScore = async () => {
+                                const user = await window.websim.getUser();
+                                const username = user ? user.username : 'Anonymous';
+                                const scores = JSON.parse(localStorage.getItem('highScores') || '[]');
+                                scores.push({
+                                    username: username,
+                                    level: this.level,
+                                    score: this.score,
+                                    timestamp: Date.now()
+                                });
+                                
+                                // Sort by score and keep top 10
+                                scores.sort((a, b) => b.score - a.score);
+                                scores.splice(10); // Keep only top 10 scores
+                                
+                                localStorage.setItem('highScores', JSON.stringify(scores));
+                            };
+                            saveHighScore();
+                        }
+                    });
+                } else {
+                    if (this.isNearPortal()) {
+                        this.startPortalTimer();
+                    } else {
+                        this.stopPortalTimer();
+                    }
+                }
+                this.render();
+            }
+
+            // Check if player picked up hammer
+            if (!this.hasHammer && this.hammerPos && 
+                this.playerPos.x === this.hammerPos.x && 
+                this.playerPos.y === this.hammerPos.y) {
+                this.hasHammer = true;
+                this.hammerUses = 4;
+                this.hammerPos = null;
+            }
+        });
+    }
+
+    advanceLevel() {
+        if (this.hasHammer) {
+            this.hammerUses = 4; // Replenish hammer uses
+        }
+        this.level++;
+        this.score += this.level * 100 - this.moves;
+
+        // Save score with username
+        const saveHighScore = async () => {
+            const user = await window.websim.getUser();
+            const username = user ? user.username : 'Anonymous';
+            const scores = JSON.parse(localStorage.getItem('highScores') || '[]');
+            scores.push({
+                username: username,
+                level: this.level,
+                score: this.score,
+                timestamp: Date.now()
+            });
+            
+            // Sort by score and keep top 10
+            scores.sort((a, b) => b.score - a.score);
+            scores.splice(10); // Keep only top 10 scores
+            
+            localStorage.setItem('highScores', JSON.stringify(scores));
+        };
+        saveHighScore();
+
+        this.moves = 0;
+        this.mazeWidth = Math.min(15 + Math.floor(this.level/2), 25);
+        this.mazeHeight = Math.min(15 + Math.floor(this.level/2), 25);
+        this.playerPos = { x: 1, y: 1 };
+        this.goalPos = { x: this.mazeWidth - 2, y: this.mazeHeight - 2 };
+        this.placeHammer();
+        this.generateMaze();
+        this.addEnemies();
+        this.stopPortalTimer();
+    }
+
+    render() {
+        const mazeElement = document.getElementById('maze');
+        mazeElement.innerHTML = '';
+        
+        for (let y = 0; y < this.mazeHeight; y++) {
+            for (let x = 0; x < this.mazeWidth; x++) {
+                const cell = document.createElement('div');
+                cell.className = 'cell';
+                
+                if (x === this.playerPos.x && y === this.playerPos.y) {
+                    cell.classList.add('player');
+                } else if (x === this.goalPos.x && y === this.goalPos.y) {
+                    cell.classList.add('goal');
+                } else if (this.hammerPos && x === this.hammerPos.x && y === this.hammerPos.y) {
+                    cell.classList.add('hammer');
+                } else if (this.enemies.some(enemy => enemy.x === x && enemy.y === y)) {
+                    cell.classList.add('enemy');
+                } else if (this.maze[y][x] === 1) {
+                    cell.classList.add('wall');
+                } else {
+                    cell.classList.add('path');
+                    const dx = Math.abs(x - this.goalPos.x);
+                    const dy = Math.abs(y - this.goalPos.y);
+                    if (dx <= 1 && dy <= 1) { // Changed from 2 to 1
+                        cell.classList.add('portal-proximity');
+                    }
+                }
+                
+                mazeElement.appendChild(cell);
+            }
+            mazeElement.appendChild(document.createElement('br'));
+        }
+
+        document.getElementById('score').textContent = 
+            `Level: ${this.level} | Score: ${this.score} | Moves: ${this.moves} | Enemy Speed: ${this.enemies[0].movesPerTurn}x`;
+        
+        // Update hammer status
+        const hammerStatus = document.getElementById('hammer-status');
+        if (this.hasHammer) {
+            hammerStatus.textContent = `Hammer uses remaining: ${this.hammerUses}`;
+        } else {
+            hammerStatus.textContent = 'Find the hammer to break/build walls!';
+        }
+        
+        // Update hammer bar
+        const hammerBar = document.getElementById('hammer-bar');
+        const hammerBarContainer = document.getElementById('hammer-bar-container');
+        
+        if (this.hasHammer) {
+            hammerBarContainer.style.display = 'block';
+            const percentage = (this.hammerUses / 4) * 100;
+            hammerBar.style.width = `${percentage}%`;
+        } else {
+            hammerBarContainer.style.display = 'none';
+        }
+
+        // Update player role display
+        const playerRoleDisplay = document.getElementById('player-role');
+        if (this.isMultiplayer) {
+            const username = this.room.party.client.username;
+            playerRoleDisplay.textContent = this.isPlayer1 ? 
+                `You are Player 1 (Maze Runner) - ${username}` : 
+                `You are Player 2 (Dino) - ${username}`;
+        } else {
+            playerRoleDisplay.textContent = '';
+        }
+    }
+}
+
+const game = new MazeGame();
+
+function initializeMenu() {
+    const menuContainer = document.getElementById('menu-container');
+    const gameContainer = document.getElementById('game-container');
+    const playButton = document.getElementById('play-button');
+    const multiplayerButton = document.getElementById('multiplayer-button');
+    const scoreboardButton = document.getElementById('scoreboard-button');
+    const suggestionButton = document.getElementById('suggestion-button');
+    const contextButton = document.getElementById('context-button');
+    const backButtons = document.querySelectorAll('.back-button');
+    
+    const sections = {
+        scoreboard: document.getElementById('scoreboard'),
+        suggestionBox: document.getElementById('suggestion-box'),
+        context: document.getElementById('context')
+    };
+
+    function hideAllSections() {
+        Object.values(sections).forEach(section => section.style.display = 'none');
+        playButton.style.display = 'block';
+        multiplayerButton.style.display = 'block';
+        scoreboardButton.style.display = 'block';
+        suggestionButton.style.display = 'block';
+        contextButton.style.display = 'block';
+        document.getElementById('info-button').style.display = 'block'; // Add this line
+    }
+
+    playButton.addEventListener('click', () => {
+        menuContainer.style.display = 'none';
+        gameContainer.style.display = 'block';
+        game.initGame();
+    });
+
+    multiplayerButton.addEventListener('click', () => {
+        menuContainer.style.display = 'none';
+        gameContainer.style.display = 'block';
+        game.initMultiplayer();
+        game.initGame();
+    });
+
+    scoreboardButton.addEventListener('click', async () => {
+        hideAllSections();
+        sections.scoreboard.style.display = 'block';
+        playButton.style.display = 'none';
+        multiplayerButton.style.display = 'none';
+        scoreboardButton.style.display = 'none';
+        suggestionButton.style.display = 'none';
+        contextButton.style.display = 'none';
+        
+        // Get current user
+        const user = await window.websim.getUser();
+        const username = user ? user.username : 'Anonymous';
+        
+        // Load high scores from localStorage with usernames
+        const scores = JSON.parse(localStorage.getItem('highScores') || '[]');
+        const scoreboardList = document.getElementById('scoreboard-list');
+        scoreboardList.innerHTML = scores
+            .map(score => `<li>@${score.username || username} - Level ${score.level} - Score: ${score.score}</li>`)
+            .join('');
+    });
+
+    suggestionButton.addEventListener('click', () => {
+        hideAllSections();
+        sections.suggestionBox.style.display = 'block';
+        playButton.style.display = 'none';
+        multiplayerButton.style.display = 'none';
+        scoreboardButton.style.display = 'none';
+        suggestionButton.style.display = 'none';
+        contextButton.style.display = 'none';
+    });
+
+    contextButton.addEventListener('click', () => {
+        hideAllSections();
+        sections.context.style.display = 'block';
+        playButton.style.display = 'none';
+        multiplayerButton.style.display = 'none';
+        scoreboardButton.style.display = 'none';
+        suggestionButton.style.display = 'none';
+        contextButton.style.display = 'none';
+    });
+
+    backButtons.forEach(button => {
+        button.addEventListener('click', hideAllSections);
+    });
+
+    // Handle suggestion form submission
+    const suggestionForm = document.getElementById('suggestion-form');
+    suggestionForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const suggestion = document.getElementById('suggestion-input').value;
+        const suggestions = JSON.parse(localStorage.getItem('suggestions') || '[]');
+        suggestions.push(suggestion);
+        localStorage.setItem('suggestions', JSON.stringify(suggestions));
+        document.getElementById('suggestion-input').value = '';
+        alert('Thank you for your suggestion!');
+        hideAllSections();
+    });
+}
+
+// Initialize menu after game instance is created
+initializeMenu();
+handleIntro();
+</script>
+</body>
+</html>
